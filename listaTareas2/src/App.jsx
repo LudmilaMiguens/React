@@ -1,15 +1,17 @@
 import { useState } from 'react'
+import React, { useEffect } from 'react';
 import './App.css'
 import { v4 as uuidv4 } from 'uuid';
 import { Input } from './componentes/input';
-import { getItems } from '../util/getItem';
-
+import { getItems } from '../../listaDeTareas/util/getItem';
+import { Historial } from './componentes/historias';
+import {BrowserRouter, Routes, Route, Link} from 'react-router-dom';
 
 function App() {
-const [todos, setTodos] = useState(getItems);
+  const [todos, setTodos] = useState(getItems);
 
 useEffect(() =>{
-  window.localStorage.setItem("Todo-list", JSON.stringify(todos))
+  window.localStorage.setItem("todo-list", JSON.stringify(todos))
 }, [todos]);
 
 const handleSudmit = (e) => {
@@ -36,10 +38,20 @@ const borrarTodos = (id) => {
   const todosBorrar = todos.filter(todo => todo.id !== id);
   setTodos([...todosBorrar]);
 };
-
   return (
     <>
-    <header>
+    <BrowserRouter>
+    <nav>
+      <Link to = "">Inicio</Link>
+      <Link to = "/componentes/historias">Historial</Link>
+    </nav>
+    <Routes>
+      <Route path = "/" element = {<Inicio/>}/>
+      <Route path = "/componentes/historias" element = {<Historial/>}/>
+    </Routes>
+
+    </BrowserRouter>
+     <header>
      <h1> Lista de tareas!!!</h1> 
     </header>
     <Input onAdd= {(e) => handleSudmit(e)} />
@@ -54,15 +66,17 @@ const borrarTodos = (id) => {
       </thead>
       <tbody>
         {todos && todos.map(todo => (
-        <tr key={todo.id}>
+          <tr key={todo.id}>
           <td>{todo.id}</td>
           <td>{todo.titulo}</td>
           <td onClick={() => cambiarEstado (todo.id)}>{todo.estado ? "Hecho" : "Pendiente" }</td>
-          <td onClick={() => borrarTodos(todo.id)}>Borrar</td>
+          <td onClick={() => borrarTodos (todo.id)}>Borrar</td>
         </tr>)
         )}
       </tbody>
     </table>
+
+    <footer>@listaDeTareas</footer>      
     </>
   )
 }
